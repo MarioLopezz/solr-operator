@@ -1,0 +1,2 @@
+#!/bin/bash
+/opt/solr-8.11.1/contrib/prometheus-exporter/bin/solr-exporter -p 9983 -z zk-0.zk-hs.default.svc.cluster.local:2181,zk-1.zk-hs.default.svc.cluster.local:2181,zk-2.zk-hs.default.svc.cluster.local:2181 -f /opt/solr-8.11.1/contrib/prometheus-exporter/conf/solr-exporter-config.xml &
