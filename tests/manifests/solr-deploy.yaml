@@ -117,7 +117,7 @@ spec:
         command:
         - "/bin/sh"
         - "-c"
-        - "if [ ! -d $SOLR_HOME/lib ] ; then mkdir -p $SOLR_HOME/lib && chown -R 8983:8983 $SOLR_HOME ; else chmod -R 777 $SOLR_HOME; fi"
+        - "if [ ! -d $SOLR_HOME/lib ] ; then mkdir -p $SOLR_HOME/lib && chown -R 8983:8983 $SOLR_HOME && chmod -R 777 $SOLR_HOME; else chmod -R 777 $SOLR_HOME; fi"
         env:
           - name: SOLR_HOME
             valueFrom:
@@ -133,7 +133,7 @@ spec:
         command:
         - "/bin/sh"
         - "-c"
-        - "if [ ! -d $SOLR_LOGS_DIR ] ; then mkdir -p $SOLR_LOGS_DIR && echo $SOLR_LOGS_DIR && chown 8983:8983 $SOLR_LOGS_DIR ; else chmod -R 777 $SOLR_LOGS_DIR; fi"
+        - "if [ ! -d $SOLR_LOGS_DIR ] ; then mkdir -p $SOLR_LOGS_DIR && chmod -R 777 $SOLR_LOGS_DIR && chown 8983:8983 $SOLR_LOGS_DIR ; else chmod -R 777 $SOLR_LOGS_DIR; fi"
         env:
           - name: SOLR_LOGS_DIR
             valueFrom:
@@ -149,7 +149,7 @@ spec:
         - "/bin/sh"
         - "-c"
         - "if [ ! -f $SOLR_HOME/solr.xml ] ; then cp /opt/solr/server/solr/solr.xml $SOLR_HOME/solr.xml;\
-               sed -i \"s/<solr>/<solr><str name='sharedLib'>\\/store\\/data\\/lib<\\/str>/g\" $SOLR_HOME/solr.xml ; else true; fi "
+               sed -i \"s/<solr>/<solr><str name='sharedLib'>\\/store\\/data\\/lib<\\/str>/g\" $SOLR_HOME/solr.xml ; else true; fi"
         env:
           - name: SOLR_HOME
             valueFrom:
