@@ -75,7 +75,7 @@ spec:
         name: manager
         env:
         - name: SOLR_IMAGE 
-          value: docker.io/kubernetesbigdataeg/solr-alpine:8.11.1
+          value: docker.io/kubernetesbigdataeg/solr:8.11.1-1
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

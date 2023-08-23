@@ -846,7 +846,7 @@ func imageForSolr() (string, error) {
 	if !found {
 		return "", fmt.Errorf("Unable to find %s environment variable with the image", imageEnvVar)
 	}*/
-	image := "docker.io/kubernetesbigdataeg/solr-alpine:8.11.1"
+	image := "docker.io/kubernetesbigdataeg/solr:8.11.1-1"
 	return image, nil
 }
 
