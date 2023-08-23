@@ -1,0 +1,29 @@
+domain: kubernetesbigdataeg.org
+layout:
+- go.kubebuilder.io/v3
+plugins:
+  deploy-image.go.kubebuilder.io/v1-alpha:
+    resources:
+    - domain: kubernetesbigdataeg.org
+      group: bigdata
+      kind: Solr
+      options:
+        containerCommand: memcached,-m=64,modern,-v
+        image: docker.io/kubernetesbigdataeg/solr:8.11.1-1
+        runAsUser: "1000"
+      version: v1alpha1
+  manifests.sdk.operatorframework.io/v2: {}
+  scorecard.sdk.operatorframework.io/v2: {}
+projectName: solr-operator
+repo: github.com/kubernetesbigdataeg/solr-operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: kubernetesbigdataeg.org
+  group: bigdata
+  kind: Solr
+  path: github.com/kubernetesbigdataeg/solr-operator/api/v1alpha1
+  version: v1alpha1
+version: "3"
