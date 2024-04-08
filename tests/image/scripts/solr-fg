@@ -33,6 +33,9 @@ case "$OOM" in
    exit 1
 esac
 
+echo "Starting Solr Exporter"
+/opt/docker-solr/scripts/exporter-setup.sh &
+
 echo "Starting Solr $SOLR_VERSION"
 # determine TINI default. If it is already set, assume the user knows what they want
 if [[ -z "${TINI:-}" ]]; then

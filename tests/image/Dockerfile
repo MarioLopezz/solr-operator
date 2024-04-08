@@ -6,7 +6,7 @@ ENV GOSU_VERSION 1.14
 LABEL maintainer="The Apache Lucene/Solr Project"
 LABEL repository="https://github.com/docker-solr/docker-solr"
 
-ARG SOLR_VERSION="8.11.1"
+ENV SOLR_VERSION="8.11.1"
 ARG SOLR_SHA512="4893f836aec84b03d7bfe574e59e305c03b5ede4a48020034fbe81440b8feee79e55fd9ead230e5b89b3f25124e9b56c1ddc4bb5c7f631cf4e846b9cab5f9a45"
 ARG SOLR_KEYS="2CECBFBA181601547B654B9FFA81AC8A490F538E"
 # If specified, this will override SOLR_DOWNLOAD_SERVER and all ASF mirrors. Typically used downstream for custom builds

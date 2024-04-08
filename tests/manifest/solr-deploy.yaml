@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: solrcluster
+  name: solr-hs
   labels:
     app: solr-app
 spec:
@@ -21,7 +21,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: solr-service
+  name: solr-svc
   labels:
     app: solr-app
 spec:
@@ -42,56 +42,25 @@ spec:
   selector:
     matchLabels:
       app: solr-app
-  serviceName: solrcluster
-  replicas: 2
+  serviceName: solr-hs
+  replicas: 1
   template:
     metadata:
       labels:
         app: solr-app
     spec:
+      securityContext:
+        fsGroup: 8983
       containers:
       - name: kubernetes-solr
         image: kubernetesbigdataeg/solr:8.11.1-1
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 8983
+          runAsGroup: 8983
         env:
-          - name: MY_POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: MY_POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: MY_POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-          - name: SOLR_HOME
-            valueFrom:
-              configMapKeyRef:
-                name: solr-cluster-config
-                key: solrHome
           - name: ZK_HOST
-            valueFrom:
-              configMapKeyRef:
-                name: solr-cluster-config
-                key: zkHost
-          - name: POD_HOST_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: SOLR_HOST
-            value: "$(POD_HOST_NAME).solrcluster"
-          - name: SOLR_LOGS_DIR
-            valueFrom:
-              configMapKeyRef:
-                name: solr-cluster-config
-                key: solrLogsDir
-          - name: SOLR_HEAP
-            valueFrom:
-              configMapKeyRef:
-                name: solr-cluster-config
-                key: solrHeap
+            value: "zookeeper-0.zookeeper-hs.default.svc.cluster.local:2181"
         readinessProbe:
           tcpSocket:
             port: 8983
@@ -103,80 +72,19 @@ spec:
           initialDelaySeconds: 45
           periodSeconds: 30
         volumeMounts:
-        - name: volsolr
-          mountPath: /store
+        - name: data
+          mountPath: /var/solr/
         ports:
         - containerPort: 8983
           name: solr-port
         - containerPort: 9983
           name: solr-metrics
-      initContainers:
-      - name: init-solr-data
-        image: busybox
-        imagePullPolicy: IfNotPresent
-        command:
-        - "/bin/sh"
-        - "-c"
-        - "if [ ! -d $SOLR_HOME/lib ] ; then mkdir -p $SOLR_HOME/lib && chown -R 8983:8983 $SOLR_HOME && chmod -R 777 $SOLR_HOME; else chmod -R 777 $SOLR_HOME; fi"
-        env:
-          - name: SOLR_HOME
-            valueFrom:
-              configMapKeyRef:
-                name: solr-cluster-config
-                key: solrHome
-        volumeMounts:
-        - name: volsolr
-          mountPath: /store
-      - name: init-solr-logs
-        image: busybox
-        imagePullPolicy: IfNotPresent
-        command:
-        - "/bin/sh"
-        - "-c"
-        - "if [ ! -d $SOLR_LOGS_DIR ] ; then mkdir -p $SOLR_LOGS_DIR && chmod -R 777 $SOLR_LOGS_DIR && chown 8983:8983 $SOLR_LOGS_DIR ; else chmod -R 777 $SOLR_LOGS_DIR; fi"
-        env:
-          - name: SOLR_LOGS_DIR
-            valueFrom:
-              configMapKeyRef:
-                name: solr-cluster-config
-                key: solrLogsDir
-        volumeMounts:
-        - name: volsolr
-          mountPath: /store
-      - name: init-solr-xml
-        image: solr:8.1.1
-        command:
-        - "/bin/sh"
-        - "-c"
-        - "if [ ! -f $SOLR_HOME/solr.xml ] ; then cp /opt/solr/server/solr/solr.xml $SOLR_HOME/solr.xml;\
-               sed -i \"s/<solr>/<solr><str name='sharedLib'>\\/store\\/data\\/lib<\\/str>/g\" $SOLR_HOME/solr.xml ; else true; fi"
-        env:
-          - name: SOLR_HOME
-            valueFrom:
-              configMapKeyRef:
-                name: solr-cluster-config
-                key: solrHome
-        volumeMounts:
-        - name: volsolr
-          mountPath: /store
   volumeClaimTemplates:
   - metadata:
-      name: volsolr
+      name: data
     spec:
       accessModes: 
       - ReadWriteOnce
-      storageClassName: fast-disks
       resources:
         requests:
-          storage: 500Mi
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: solr-cluster-config
-data:
-  solrHome: "/store/data"
-  solrPort: "8983"
-  zkHost: "zk-0.zk-hs.default.svc.cluster.local:2181,zk-1.zk-hs.default.svc.cluster.local:2181,zk-2.zk-hs.default.svc.cluster.local:2181"
-  solrLogsDir: "/store/logs"
-  solrHeap: "1g"
+          storage: 5Gi
