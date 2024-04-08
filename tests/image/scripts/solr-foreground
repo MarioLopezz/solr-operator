@@ -11,6 +11,5 @@ fi
 /opt/docker-solr/scripts/init-var-solr
 
 . /opt/docker-solr/scripts/run-initdb
-/opt/docker-solr/scripts/exporter-setup.sh
 exec solr-fg "$@"
 
