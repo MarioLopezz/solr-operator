@@ -62,12 +62,14 @@ spec:
           - name: ZK_HOST
             value: "zookeeper-0.zookeeper-hs.default.svc.cluster.local:2181"
         readinessProbe:
-          tcpSocket:
+          httpGet:
+            path: /solr/admin/info/health
             port: 8983
           initialDelaySeconds: 45
           periodSeconds: 30
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            path: /solr/admin/info/system
             port: 8983
           initialDelaySeconds: 45
           periodSeconds: 30
